@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">FourInARow</string>
+    <string name="Score">Score</string>
+    <string name="exit">Quit Game</string>
+    <string name="Start">Start</string>
+    <string name="newGame">New Game</string>
+    <string name="main">Main Menu</string>
+    <string name="red_win">Red Win!</string>
+    <string name="yellow_win">Yellow Win!</string>
+    <string name="text">TextView</string>
+    <string name="your_turn">YourTurn</string>
+    <string name="team">Name</string>
+    <string name="history">Score history</string>
+    <string name="ok">Ok!</string>
+    <string name="number_of_moves">Number of moves</string>
+</resources>
