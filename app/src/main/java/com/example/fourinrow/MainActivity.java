@@ -20,6 +20,10 @@ public class MainActivity extends AppCompatActivity {
 
         ImageButton start = findViewById(R.id.start);
         start.setImageResource(R.drawable.newgamebut);
+        if (buttonOn1 == true){
+            start.setImageResource(R.drawable.newgamebut);
+        }
+
         start.setOnClickListener(v -> {
             //set active image
             if (buttonOn1 == true) {
@@ -34,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
         ImageButton score = findViewById(R.id.score);
         score.setImageResource(R.drawable.scorebut);
+        if (buttonOn2 == true) {
+            score.setImageResource(R.drawable.scorebut);
+            buttonOn2 = false;
+        }
         score.setOnClickListener(v -> {
             //set active image
             if (buttonOn2 == true) {
@@ -50,6 +58,24 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ImageButton start = findViewById(R.id.start);
+        start.setImageResource(R.drawable.newgamebut);
+        ImageButton score = findViewById(R.id.score);
+        score.setImageResource(R.drawable.scorebut);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ImageButton start = findViewById(R.id.start);
+        start.setImageResource(R.drawable.newgamebut);
+        ImageButton score = findViewById(R.id.score);
+        score.setImageResource(R.drawable.scorebut);
     }
 
     private void openHistory(){

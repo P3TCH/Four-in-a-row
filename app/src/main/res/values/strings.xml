@@ -13,4 +13,5 @@
     <string name="history">Score history</string>
     <string name="ok">Ok!</string>
     <string name="number_of_moves">Number of moves</string>
+    <string name="high_score">High Score</string>
 </resources>

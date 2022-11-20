@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -30,11 +31,12 @@ import java.util.Date;
 public class MainActivityGame extends AppCompatActivity {
 
     JSONArray array = new JSONArray();
-    int turn = 0; //0 is yellow, 1 is red
-    int boardId[][] = new int[6][7];
-    int board[][] = new int[6][7]; //1 is yellow, 2 is red
-    int yellow_score = 0;
-    int red_score = 0;
+    private int turn = 0; //0 is yellow, 1 is red
+    private int boardId[][] = new int[6][7];
+    private int board[][] = new int[6][7]; //1 is yellow, 2 is red
+    private int yellow_score = 0;
+    private int red_score = 0;
+    private boolean endgame = false;
 
     //Four in a row game
     @Override
@@ -49,12 +51,35 @@ public class MainActivityGame extends AppCompatActivity {
 
         //onclick back_but to go back to main activity
         findViewById(R.id.back_but).setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Warning");
+            builder.setMessage("Are you sure you want to exit?");
+            builder.setPositiveButton("Yes", (dialog, which) -> {
+                finish();
+            });
+            builder.setNegativeButton("No", (dialog, which) -> {
+                dialog.dismiss();
+            });
+            builder.show();
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
+//            finish();
+        });
+    }
+
+    //handle press back button show warning dialog
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Warning");
+        builder.setMessage("Are you sure you want to exit?");
+        builder.setPositiveButton("Yes", (dialog, which) -> {
             finish();
         });
-
-        //showActivityWin(3);
+        builder.setNegativeButton("No", (dialog, which) -> {
+            dialog.dismiss();
+        });
+        builder.show();
     }
 
     private void playGame(){
@@ -165,7 +190,10 @@ public class MainActivityGame extends AppCompatActivity {
 
 
         AlertDialog dialog = builder.create();
-        dialog.show();
+        if (endgame == false){
+            dialog.show();
+            endgame = true;
+        }
 
         //click back to main.
         view.findViewById(R.id.button_back).setOnClickListener(v -> {
@@ -1018,8 +1046,6 @@ public class MainActivityGame extends AppCompatActivity {
     }
 
     public void writeData(String name, int score){
-        Configuration config = getResources().getConfiguration();
-
         JSONObject obj = new JSONObject();
         try {
             obj.put("name", name);
@@ -1031,41 +1057,67 @@ public class MainActivityGame extends AppCompatActivity {
 
         String filename = "FourARow.txt";
         FileOutputStream outputStream;
-        String storageState = Environment.getExternalStorageState();
-        if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-            try {
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
-                outputStream = new FileOutputStream(file);
-                outputStream.write(array.toString().getBytes());
-                outputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        //String storageState = Environment.getExternalStorageState();
+        //store in internal storage
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(array.toString().getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+//        if (storageState.equals(Environment.MEDIA_MOUNTED)) {
+//            try {
+//                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+//                outputStream = new FileOutputStream(file);
+//                outputStream.write(array.toString().getBytes());
+//                outputStream.close();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public void loadData(){
         String filename = "FourARow.txt";
         String inputString;
-        String storageState = Environment.getExternalStorageState();
-        if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-            try {
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
-                BufferedReader inputReader = new BufferedReader(new InputStreamReader(
-                        new FileInputStream(file)));
-                StringBuilder stringBuffer = new StringBuilder();
-                while ((inputString = inputReader.readLine()) != null) {
-                    stringBuffer.append(inputString).append("\n");
-                }
-
-                JSONArray infile_array = new JSONArray(stringBuffer.toString());
-                for (int i = 0; i < infile_array.length(); i++) {
-                    array.put(infile_array.getJSONObject(i));
-                }
-                inputReader.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+        //String storageState = Environment.getExternalStorageState();
+        //load from internal storage
+        try {
+            FileInputStream inputStream = openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((inputString = bufferedReader.readLine()) != null) {
+                stringBuilder.append(inputString).append("\n");
             }
-        }//end if
+
+            JSONArray infile_array = new JSONArray(stringBuilder.toString());
+            for (int i = 0; i < infile_array.length(); i++) {
+                array.put(infile_array.getJSONObject(i));
+            }
+            bufferedReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        if (storageState.equals(Environment.MEDIA_MOUNTED)) {
+//            try {
+//                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+//                BufferedReader inputReader = new BufferedReader(new InputStreamReader(
+//                        new FileInputStream(file)));
+//                StringBuilder stringBuffer = new StringBuilder();
+//                while ((inputString = inputReader.readLine()) != null) {
+//                    stringBuffer.append(inputString).append("\n");
+//                }
+//
+//                JSONArray infile_array = new JSONArray(stringBuffer.toString());
+//                for (int i = 0; i < infile_array.length(); i++) {
+//                    array.put(infile_array.getJSONObject(i));
+//                }
+//                inputReader.close();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }//end if
     }
 }
